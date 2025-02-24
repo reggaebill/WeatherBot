@@ -93,4 +93,4 @@ async def ping(message):
     await message.send('pong')
 
 
-bot.run('MTM0MzM1NzIzMDMwNDU5MjAwNQ.GjVA4D.FtCugN4KGMi0JCFpPq-HQLSuHuag00DQCQRn0w')
+bot.run()
