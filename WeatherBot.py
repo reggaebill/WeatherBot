@@ -8,7 +8,24 @@ weather_api = open('C:\\Users\\aaron\\Downloads\\openapi.json')
 json.load(weather_api)
 
 from discord.ext import commands
-
+def callWeatherDaily(x):
+    daily_outlook = ''
+    i = 0
+    response = requests.get(f'https://api.weather.gov/points/{x}')
+    if response.status_code == 200:
+        data = response.json()
+        daily_data = requests.get(data['properties']['forecast'])
+        daily_data_parsed = daily_data.json()
+        list_data = daily_data_parsed['properties']['periods']
+        for item in list_data:
+            outlook = f'{item['detailedForecast']}'
+            daily_outlook += f'**{item['name']}**{':':^5}{outlook}\n'
+            i += 1
+            if i == 11:
+                break
+        return daily_outlook
+    else:
+        return "https://tenor.com/view/wouldnt-you-like-to-know-weather-boy-gif-15559185"
 def parse_day(day):        #splits up the time parameter and returns day only
     time_list = day.split("T")
     time_day = time_list[0].split('-')
@@ -23,6 +40,7 @@ def parse_time(time):     #splits up the time parameter and returns hour only
     hour_time = hour_time[:2]
     hour_time = f'{hour_time[0]}:{hour_time[1]}'
     return hour_time
+
 def get_geocode(location):     #turns text location into coordinates
     location = geolocator.geocode(location)
     print(location.latitude, location.longitude)
@@ -87,6 +105,11 @@ async def on_ready():
 async def hourly(message, postal_code):
     coordinates = get_geocode(postal_code)
     await message.send(callWeather(coordinates))
+
+@bot.command()
+async def daily(message, postal_code):
+    coordinates = get_geocode(postal_code)
+    await message.send(callWeatherDaily(coordinates))
 
 @bot.command()
 async def ping(message):
